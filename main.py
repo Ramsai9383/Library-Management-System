@@ -1,65 +1,75 @@
-class Book:
-    def _init_(self, book_id, title, author):
-        self.book_id = book_id
-        self.title = title
-        self.author = author
-        self.available = True
-
-class Member:
-    def _init_(self, member_id, name):
-        self.member_id = member_id
-        self.name = name
-        self.books_borrowed = []
-        self.is_subscribed = False
-
-    def subscribe(self):
-        self.is_subscribed = True
-        return f"{self.name} has subscribed."
-
-    def borrow_book(self, book):
-        if self.is_subscribed:
-            if book.available:
-                self.books_borrowed.append(book)
-                book.available = False
-                return f"{self.name} borrowed '{book.title}'."
-            else:
-                return f"Sorry, '{book.title}' is not available for borrowing."
-        else:
-            return f"{self.name} is not subscribed. Please subscribe to borrow books."
-
-    def return_book(self, book):
-        if book in self.books_borrowed:
-            self.books_borrowed.remove(book)
-            book.available = True
-            return f"{self.name} returned '{book.title}'."
-        else:
-            return f"Error: '{book.title}' not found in the list of borrowed books for {self.name}."
-
 class Library:
-    def _init_(self):
-        self.books = []
-        self.members = []
-
+    def __init__(self,name):
+        self.name=name
+        self.books=[]
+   
     def add_book(self, book):
         self.books.append(book)
 
-    def add_member(self, member):
-        self.members.append(member)
+    def display_books(self):
+        print("Available Books")
+        for book in self.books:
+            print(book)
 
-# Example Usage:
-book1 = Book(1, "The Great Gatsby", "F. Scott Fitzgerald")
-book2 = Book(2, "To Kill a Mockingbird", "Harper Lee")
+class Book:
+    def __init__(self, book_id, title, author, copies):
+        self.book_id = book_id
+        self.title = title
+        self.author = author
+        self.copies = copies
+        self.borrowed_books = []
 
-member1 = Member(101, "Alice")
-member2 = Member(102, "Bob")
+    def __str__(self):
+        return ("BookId:",self.book_id,"Title:",self.title,"Author:",self.author, "Available Copies:", self.copies)
 
-library = Library()
+    def borrow_book(self):
+        if self.copies > 0:
+            self.copies -= 1
+            self.borrowed_books.append(self)
+            return True
+        else:
+            print("The book is not available in the library.")
+            return False
+
+    def return_book(self):
+        if self in self.borrowed_books:
+            self.copies += 1
+            self.borrowed_books.remove(self)
+            print("Book return was successful.")
+        else:
+            print("The book is not borrowed")
+
+class Member:
+    def __init__(self, member_id, name):
+        self.member_id = member_id
+        self.name = name
+        self.books_borrowed = []
+        self.members = []
+        self.is_subscribed = False
+
+    def add_subscription(self):
+        if self.is_subscribed:
+            print("Member has already subscribed")
+        else:
+            self.members.append(self.name)
+            print(self.name,"has subscribed")
+            self.is_subscribed = True
+
+    def remove_subscription(self):
+        if not self.is_subscribed:
+            print("Member has not subscribed before.")
+        else:
+            self.members.remove(self.name)
+            print(self.name ,"has removed subscription,.")
+            self.is_subscribed = False
+
+book1 = Book(1, "The Great Gatsby", "F. Scott Fitzgerald", 5)
+book2 = Book(2, "To Kill a Mockingbird", "Harper Lee", 9)
+library = Library("My Library")
 library.add_book(book1)
 library.add_book(book2)
-library.add_member(member1)
-library.add_member(member2)
 
-print(member1.subscribe())  # Output: "Alice has subscribed."
-
-print(member1.borrow_book(book1))  # Output: "Alice borrowed 'The Great Gatsby'."
-print(member2.borrow_book(book2))  # Output: "Bob is not subscribed. Please subscribe to borrow books."
+member1 = Member(1, "Alice")
+member2 = Member(2, "Bob")
+member1.add_subscription()
+member2.add_subscription()
